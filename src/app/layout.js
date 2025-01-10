@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 
 // Metadata for the app
 export const metadata = {
-  title: "Pinterest Clone",
-  description: 'A Pinterest clone built with Next.js, Express, PostgreSQL, and Tailwind CSS.',
+  title: "Boardify",
+  description: 'A Pinterest-Instagram-Tiktok clone built with Next.js, Express, PostgreSQL, and Tailwind CSS.',
 };
 
 export default function RootLayout({ children }) {

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getAuth, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import Navbar from '../components/Navbar';
+import '../app/globals.css';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -13,15 +14,13 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Check if user is already logged in
   useEffect(() => {
     const unsubscribe = getAuth().onAuthStateChanged((user) => {
       if (user) {
-        router.push('/'); // Redirect to home if already logged in
+        router.push('/');
       }
     });
-
-    return () => unsubscribe(); // Cleanup subscription
+    return () => unsubscribe();
   }, [router]);
 
   const handleEmailSignup = async (e) => {
@@ -30,8 +29,6 @@ export default function Signup() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-      
-      // After successful signup, redirect to login page
       router.push('/login');
     } catch (err) {
       setError(err.message);
@@ -54,89 +51,116 @@ export default function Signup() {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="max-w-md mx-auto mt-10 p-8 bg-white rounded-2xl shadow-lg">
-        <h1 className="text-4xl font-bold text-primary mb-8 text-center">Sign Up</h1>
-        
-        <form onSubmit={handleEmailSignup} className="space-y-6">
-          <div>
-            <label className="block text-lg font-medium mb-2" htmlFor="name">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-              placeholder="Enter your name"
-              required
-            />
-          </div>
+    <div className="min-h-screen bg-peach/10">
+      <Navbar title="Boardify" />
+      <div className="max-w-md mx-auto px-6 py-12">
+        <div className="bg-white rounded-2xl border-2 border-blue shadow-[8px_8px_0px_0px_#FFBE98] p-8">
+          <h1 className="text-4xl font-black text-blue mb-8 text-center">Join Boardify</h1>
+          
+          <form onSubmit={handleEmailSignup} className="space-y-6">
+            <div>
+              <label className="block font-bold text-blue mb-2" htmlFor="name">
+                Full Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-4 bg-white border-2 border-blue rounded-xl
+                          focus:border-pink focus:ring-4 focus:ring-peach/30
+                          transition-all duration-200 placeholder:text-blue/50"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-lg font-medium mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+            <div>
+              <label className="block font-bold text-blue mb-2" htmlFor="email">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-4 bg-white border-2 border-blue rounded-xl
+                          focus:border-pink focus:ring-4 focus:ring-peach/30
+                          transition-all duration-200 placeholder:text-blue/50"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-lg font-medium mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-              placeholder="Create a password"
-              required
-            />
-          </div>
+            <div>
+              <label className="block font-bold text-blue mb-2" htmlFor="password">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-4 bg-white border-2 border-blue rounded-xl
+                          focus:border-pink focus:ring-4 focus:ring-peach/30
+                          transition-all duration-200 placeholder:text-blue/50"
+                placeholder="Create a password"
+                required
+              />
+            </div>
 
-          {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
+            {error && (
+              <div className="p-4 bg-pink/10 border-2 border-pink rounded-xl">
+                <p className="text-pink font-medium text-sm">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className={`w-full p-4 bg-pink text-white font-bold rounded-xl
+                        border-2 border-blue shadow-[4px_4px_0px_0px_#125B9A]
+                        hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#125B9A]
+                        active:translate-y-0 active:shadow-none
+                        transition-all duration-200
+                        ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading}
+            >
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <div className="my-8 flex items-center justify-between">
+            <div className="flex-1 border-b-2 border-blue/20"></div>
+            <span className="px-4 font-bold text-blue/60">or</span>
+            <div className="flex-1 border-b-2 border-blue/20"></div>
+          </div>
 
           <button
-            type="submit"
-            className="w-full p-4 bg-primary text-white rounded-xl font-medium text-lg hover:bg-primary/90 transform hover:scale-[0.99] transition-all duration-200"
+            onClick={handleGoogleSignup}
+            className={`w-full p-4 bg-teal text-white font-bold rounded-xl
+                      border-2 border-blue shadow-[4px_4px_0px_0px_#125B9A]
+                      hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#125B9A]
+                      active:translate-y-0 active:shadow-none
+                      transition-all duration-200 mb-8
+                      ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? 'Signing up with Google...' : 'Continue with Google'}
           </button>
-        </form>
 
-        <div className="my-8 flex items-center justify-between">
-          <hr className="w-full border-gray-200" />
-          <span className="px-4 text-gray-500 text-sm">or</span>
-          <hr className="w-full border-gray-200" />
+          <div className="text-center">
+            <p className="text-blue">
+              Already have an account?{' '}
+              <Link 
+                href="/login" 
+                className="font-bold text-pink hover:-translate-y-1 hover:underline inline-block transition-transform"
+              >
+                Log in
+              </Link>
+            </p>
+          </div>
         </div>
-
-        <button
-          onClick={handleGoogleSignup}
-          className="w-full p-4 bg-red-500 text-white rounded-xl font-medium text-lg hover:bg-red-600 transform hover:scale-[0.99] transition-all duration-200"
-          disabled={loading}
-        >
-          {loading ? 'Signing up...' : 'Continue with Google'}
-        </button>
-
-        <p className="mt-6 text-center text-gray-600">
-          Already have an account?{' '}
-          <Link href="/login" className="text-primary font-medium hover:underline">
-            Log in
-          </Link>
-        </p>
       </div>
     </div>
   );
-} 
+}

@@ -4,6 +4,7 @@ import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvide
 import { auth } from '../lib/firebase';
 import Navbar from '../components/Navbar';
 import Link from 'next/link';
+import '../app/globals.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,38 +13,35 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Check if user is already logged in
   useEffect(() => {
     const unsubscribe = getAuth().onAuthStateChanged((user) => {
       if (user) {
-        router.push('/'); // Redirect to home if already logged in
+        router.push('/');
       }
     });
 
-    return () => unsubscribe(); // Cleanup subscription
+    return () => unsubscribe();
   }, [router]);
 
-  // Handle email/password login
   const handleEmailPasswordLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/'); // Redirect to homepage after successful login
+      router.push('/');
     } catch (err) {
-      setError(err.message); // Display Firebase error message
+      setError(err.message);
       console.error(err.message);
     }
     setLoading(false);
   };
 
-  // Handle Google login
   const handleGoogleLogin = async () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      router.push('/'); // Redirect to homepage after successful login
+      router.push('/');
     } catch (err) {
       setError('Error logging in with Google');
       console.error(err.message);
@@ -52,74 +50,97 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="max-w-sm mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-primary mb-6">Login</h1>
-        
-        <form onSubmit={handleEmailPasswordLogin} className="space-y-6">
-          <div>
-            <label className="block font-semibold" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded focus:ring-2 focus:ring-primary"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+    <div className="min-h-screen bg-peach/10">
+      <Navbar title="Boardify" />
+      <div className="max-w-md mx-auto px-6 py-12">
+        <div className="bg-white rounded-2xl border-2 border-blue shadow-[8px_8px_0px_0px_#FFBE98] p-8">
+          <h1 className="text-4xl font-black text-blue mb-8 text-center">Welcome Back!</h1>
+          
+          <form onSubmit={handleEmailPasswordLogin} className="space-y-6">
+            <div>
+              <label className="block font-bold text-blue mb-2" htmlFor="email">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-4 bg-white border-2 border-blue rounded-xl
+                          focus:border-pink focus:ring-4 focus:ring-peach/30
+                          transition-all duration-200 placeholder:text-blue/50"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block font-semibold" htmlFor="password">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded focus:ring-2 focus:ring-primary"
-              placeholder="Enter your password"
-              required
-            />
-          </div>
+            <div>
+              <label className="block font-bold text-blue mb-2" htmlFor="password">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-4 bg-white border-2 border-blue rounded-xl
+                          focus:border-pink focus:ring-4 focus:ring-peach/30
+                          transition-all duration-200 placeholder:text-blue/50"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && (
+              <div className="p-4 bg-pink/10 border-2 border-pink rounded-xl">
+                <p className="text-pink font-medium text-sm">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className={`w-full p-4 bg-pink text-white font-bold rounded-xl
+                        border-2 border-blue shadow-[4px_4px_0px_0px_#125B9A]
+                        hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#125B9A]
+                        active:translate-y-0 active:shadow-none
+                        transition-all duration-200
+                        ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading}
+            >
+              {loading ? 'Logging in...' : 'Login with Email'}
+            </button>
+          </form>
+
+          <div className="my-8 flex items-center justify-between">
+            <div className="flex-1 border-b-2 border-blue/20"></div>
+            <span className="px-4 font-bold text-blue/60">or</span>
+            <div className="flex-1 border-b-2 border-blue/20"></div>
+          </div>
 
           <button
-            type="submit"
-            className={`w-full p-3 bg-primary text-white rounded-lg ${loading ? 'opacity-50' : ''}`}
+            onClick={handleGoogleLogin}
+            className={`w-full p-4 bg-teal text-white font-bold rounded-xl
+                      border-2 border-blue shadow-[4px_4px_0px_0px_#125B9A]
+                      hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#125B9A]
+                      active:translate-y-0 active:shadow-none
+                      transition-all duration-200 mb-8
+                      ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login with Email'}
+            {loading ? 'Signing in with Google...' : 'Login with Google'}
           </button>
-        </form>
 
-        <div className="my-4 flex items-center justify-between">
-          <hr className="w-full" />
-          <span className="mx-4 text-gray-600">or</span>
-          <hr className="w-full" />
-        </div>
-
-        <button
-          onClick={handleGoogleLogin}
-          className={`w-full p-3 bg-red-600 text-white rounded-lg mb-4 ${loading ? 'opacity-50' : ''}`}
-          disabled={loading}
-        >
-          {loading ? 'Signing in with Google...' : 'Login with Google'}
-        </button>
-
-        <div className="text-center mt-6">
-          <p className="text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/signup" className="text-primary font-semibold hover:underline">
-              Sign up
-            </Link>
-          </p>
+          <div className="text-center">
+            <p className="text-blue">
+              Don't have an account?{' '}
+              <Link 
+                href="/signup" 
+                className="font-bold text-pink hover:-translate-y-1 hover:underline inline-block transition-transform"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

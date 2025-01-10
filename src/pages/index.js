@@ -1,59 +1,63 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../app/globals.css';
+import { getAuth } from 'firebase/auth';
 import Navbar from '../components/Navbar';
+import PinGrid from '../components/PinGrid';
+import '../app/globals.css';
 
 export default function Home() {
   const [pins, setPins] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged(setUser);
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchPins = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/pins');
+        const response = await axios.get('http://10.0.0.23:5000/api/pins');
         setPins(response.data);
       } catch (error) {
-        setError('Error fetching pins.');
         console.error('Error fetching pins:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchPins();
   }, []);
 
-  return (
-    <div>
-      <Navbar />
-      <div className="max-w-7xl mx-auto p-6">
-        <h1 className="text-3xl font-semibold text-primary mb-6">Explore Pins</h1>
+  const handleDeletePin = async (pinId) => {
+    try {
+      const response = await axios.delete(`http://10.0.0.23:5000/api/pins/${pinId}`);
+      
+      if (response.status === 200) {
+        // Remove the pin from state
+        setPins(prevPins => prevPins.filter(pin => pin.id !== pinId));
+      }
+    } catch (error) {
+      console.error('Error deleting pin:', error);
+      
+      if (error.response?.status === 404) {
+        throw new Error('Pin not found. It may have been already deleted.');
+      } else {
+        throw new Error(error.response?.data?.error || 'Failed to delete pin');
+      }
+    }
+  };
 
-        {loading ? (
-          <div className="text-center text-xl text-primary">Loading pins...</div>
-        ) : error ? (
-          <div className="text-center text-xl text-secondary">{error}</div>
-        ) : pins.length === 0 ? (
-          <div className="text-center text-xl text-gray-500">No pins available</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {pins.map((pin) => (
-              <div key={pin.id} pin={pin} className="border p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-                <img
-                  src={pin.image_url}
-                  alt={pin.title}
-                  className="w-full h-64 object-cover rounded-md mb-4"
-                />
-                <h2 className="text-xl font-bold text-primary mb-2">{pin.title}</h2>
-                <p className="text-gray-600">{pin.description}</p>
-                <div className="flex items-center text-sm text-gray-500">
-                  <span className="font-medium">{pin.username || 'Unknown'}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar title="Boardify" />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <PinGrid 
+          pins={pins} 
+          loading={loading} 
+          onDeletePin={user ? handleDeletePin : undefined}
+        />
       </div>
     </div>
   );

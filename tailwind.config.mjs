@@ -8,8 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: '#F05A7E',
+        primaryDark: '#0B8494',
+        secondary: '#125B9A',
+        accent: '#FFBE98',
+        teal: '#0B8494',
+        peach: '#FFBE98',
+        orange: '#F05A7E',
+        pink: '#F05A7E',
+        retro: '#FFBE98',
       },
     },
   },
