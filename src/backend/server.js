@@ -2,11 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { Pool } = require('pg');
+const https = require('https');
+const fs = require('fs');
 
 dotenv.config(); // Load environment variables
 
 const app = express();
 app.use(cors());
+
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://boardify-puce.vercel.app']  // Your Vercel deployment URL
+    : ['http://localhost:3000'],            // Local development URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Updated pool configuration with SSL and connection timeout
