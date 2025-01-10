@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { faker } = require('@faker-js/faker');
+import api from '../lib/api';
 
 // Array of realistic categories for pins
 const categories = [
@@ -51,7 +52,7 @@ const seedPins = async (count = 100) => {
     try {
       const pin = generatePin();
       console.log('Generated pin:', pin); // Log the generated pin
-      await axios.post('http://10.0.0.23:5000/api/pins', pin);
+      await api.post('/api/pins', pin);
       successCount++;
       console.log(`Created pin ${i + 1}/${count}`);
     } catch (error) {

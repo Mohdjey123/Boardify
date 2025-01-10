@@ -6,6 +6,7 @@ import { Dialog } from '@headlessui/react';
 import { getAuth } from 'firebase/auth';
 import axios from 'axios';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function CommentModal({ 
   pin, 
@@ -28,7 +29,7 @@ export default function CommentModal({
     const fetchComments = async () => {
       if (isOpen && pin.id) {
         try {
-          const response = await axios.get(`http://10.0.0.23:5000/api/pins/${pin.id}/comments`);
+          const response = await api.get(`/api/pins/${pin.id}/comments`);
           setComments(response.data);
         } catch (error) {
           console.error('Error fetching comments:', error);
@@ -44,7 +45,7 @@ export default function CommentModal({
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(`http://10.0.0.23:5000/api/pins/${pin.id}/comments`, {
+      const response = await api.post(`/api/pins/${pin.id}/comments`, {
         username: auth.currentUser.displayName,
         content: newComment
       });
@@ -63,7 +64,7 @@ export default function CommentModal({
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://10.0.0.23:5000/api/pins/${pin.id}/like`, {
+      const response = await api.post(`/api/pins/${pin.id}/like`, {
         username: currentUser.displayName,
       });
       

@@ -9,6 +9,7 @@ import BoardGrid from '../../components/BoardGrid';
 import CreateBoardModal from '../../components/CreateBoardModal';
 import PinGrid from '../../components/PinGrid';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import api from '../lib/api';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function ProfilePage() {
 
   const fetchUserStats = async () => {
     try {
-      const response = await axios.get(`http://10.0.0.23:5000/api/users/${username}/stats`);
+      const response = await api.get(`/api/users/${username}/stats`);
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching user stats:', error);
@@ -54,13 +55,13 @@ export default function ProfilePage() {
     try {
       let response;
       if (activeTab === 'boards') {
-        response = await axios.get(`http://10.0.0.23:5000/api/boards/${username}`);
+        response = await api.get(`/api/boards/${username}`);
         setBoards(response.data);
       } else {
         const endpoint = activeTab === 'saved' 
           ? `/api/pins/saved/${username}`
           : `/api/pins/created/${username}`;
-        response = await axios.get(`http://10.0.0.23:5000${endpoint}`);
+        response = await api.get(`${endpoint}`);
         setPins(response.data);
       }
     } catch (error) {
@@ -76,7 +77,7 @@ export default function ProfilePage() {
 
   const deletePin = async (pinId) => {
     try {
-      const response = await axios.delete(`http://10.0.0.23:5000/api/pins/${pinId}`);
+      const response = await axios.delete(`/api/pins/${pinId}`);
       
       if (response.status === 200) {
         // Remove the pin from state
@@ -106,7 +107,7 @@ export default function ProfilePage() {
 
   const removePinFromBoard = async (pinId, boardId) => {
     try {
-      await axios.post(`http://10.0.0.23:5000/api/boards/${boardId}/remove-pin`, { pinId });
+      await api.post(`/api/boards/${boardId}/remove-pin`, { pinId });
       setBoards(boards.map(board =>
         board.id === boardId ? { ...board, pin_count: board.pin_count - 1 } : board
       ));
@@ -117,7 +118,7 @@ export default function ProfilePage() {
 
   const deleteBoard = async (boardId) => {
     try {
-      await axios.delete(`http://10.0.0.23:5000/api/boards/${boardId}`);
+      await axios.delete(`/api/boards/${boardId}`);
       setBoards(boards.filter(board => board.id !== boardId));
     } catch (error) {
       console.error('Error deleting board:', error);

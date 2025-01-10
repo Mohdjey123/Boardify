@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import CommentModal from './CommentModal';
 import SavePinModal from './SavePinModal';
 import { Dialog } from '@headlessui/react';
+import api from '../lib/api';
 
 export default function PinCard({ pin, boardTitle, onDeletePin }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -43,7 +44,7 @@ export default function PinCard({ pin, boardTitle, onDeletePin }) {
   useEffect(() => {
     const recordView = async () => {
       try {
-        const response = await axios.post(`http://10.0.0.23:5000/api/pins/${pin.id}/view`);
+        const response = await api.post(`/api/pins/${pin.id}/view`);
         setViews(response.data.views);
       } catch (error) {
         console.error('Error recording view:', error);
@@ -63,7 +64,7 @@ export default function PinCard({ pin, boardTitle, onDeletePin }) {
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://10.0.0.23:5000/api/pins/${pin.id}/like`, {
+      const response = await api.post(`/api/pins/${pin.id}/like`, {
         username: user.displayName
       });
       

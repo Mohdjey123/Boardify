@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function SavePinModal({ isOpen, onClose, pin, username }) {
   const [boards, setBoards] = useState([]);
@@ -19,7 +20,7 @@ export default function SavePinModal({ isOpen, onClose, pin, username }) {
   const fetchBoards = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://10.0.0.23:5000/api/boards/${username}`);
+      const response = await api.get(`/api/boards/${username}`);
       setBoards(response.data);
     } catch (error) {
       console.error('Error fetching boards:', error);
@@ -30,7 +31,7 @@ export default function SavePinModal({ isOpen, onClose, pin, username }) {
   const handleSaveToBoard = async (boardId) => {
     setSaving(true);
     try {
-      const response = await axios.post(`http://10.0.0.23:5000/api/boards/${boardId}/pins`, {
+      const response = await api.post(`/api/boards/${boardId}/pins`, {
         pinId: pin.id
       });
       
@@ -52,7 +53,7 @@ export default function SavePinModal({ isOpen, onClose, pin, username }) {
 
     setSaving(true);
     try {
-      const response = await axios.post('http://10.0.0.23:5000/api/boards', {
+      const response = await api.post('/api/boards', {
         username,
         title: newBoardTitle.trim(),
         description: '',

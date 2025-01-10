@@ -4,6 +4,7 @@ import { getAuth } from 'firebase/auth';
 import Navbar from '../components/Navbar';
 import PinGrid from '../components/PinGrid';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function Home() {
   const [pins, setPins] = useState([]);
@@ -19,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPins = async () => {
       try {
-        const response = await axios.get('http://10.0.0.23:5000/api/pins');
+        const response = await api.get('/api/pins');
         setPins(response.data);
       } catch (error) {
         console.error('Error fetching pins:', error);
@@ -32,7 +33,7 @@ export default function Home() {
 
   const handleDeletePin = async (pinId) => {
     try {
-      const response = await axios.delete(`http://10.0.0.23:5000/api/pins/${pinId}`);
+      const response = await axios.delete(`/api/pins/${pinId}`);
       
       if (response.status === 200) {
         // Remove the pin from state

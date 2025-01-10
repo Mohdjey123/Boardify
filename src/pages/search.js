@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import PinCard from '../components/PinCard';
+import api from '../lib/api';
 
 export default function SearchPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function SearchPage() {
       
       setLoading(true);
       try {
-        const response = await axios.get(`http://10.0.0.23:5000/api/pins/search?q=${encodeURIComponent(query)}`);
+        const response = await api.get(`/api/pins/search?q=${encodeURIComponent(query)}`);
         setSearchResults(response.data);
         setError(null);
       } catch (err) {

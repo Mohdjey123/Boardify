@@ -8,6 +8,7 @@ import { CldUploadWidget } from 'next-cloudinary';
 import Navbar from '../components/Navbar';
 import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function CreatePin() {
   const [title, setTitle] = useState('');
@@ -93,7 +94,7 @@ export default function CreatePin() {
         richText: editor.getJSON()
       };
 
-      const response = await axios.post('http://10.0.0.23:5000/api/pins', newPin);
+      const response = await api.post('/api/pins', newPin);
       
       if (!response?.data) {
         throw new Error('Failed to create pin. Please try again.');

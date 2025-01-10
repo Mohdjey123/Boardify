@@ -4,6 +4,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
@@ -33,7 +34,7 @@ export default function SearchBar() {
     if (value.length > 1) {
       setIsSearching(true);
       try {
-        const response = await axios.get(`http://10.0.0.23:5000/api/search/users?query=${value}`);
+        const response = await api.get(`/api/search/users?query=${value}`);
         setResults(response.data);
       } catch (error) {
         console.error('Error searching:', error);

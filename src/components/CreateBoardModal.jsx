@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function CreateBoardModal({ isOpen, onClose, username, onBoardCreated }) {
   const [title, setTitle] = useState('');
@@ -15,7 +16,7 @@ export default function CreateBoardModal({ isOpen, onClose, username, onBoardCre
 
     setLoading(true);
     try {
-      const response = await axios.post('http://10.0.0.23:5000/api/boards', {
+      const response = await api.post('/api/boards', {
         username,
         title: title.trim(),
         description: description.trim(),

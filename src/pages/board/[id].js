@@ -5,6 +5,7 @@ import { getAuth } from 'firebase/auth';
 import Navbar from '../../components/Navbar';
 import PinGrid from '../../components/PinGrid';
 import '../../app/globals.css';
+import api from '../lib/api';
 
 export default function BoardPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function BoardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  
 
   useEffect(() => {
     const auth = getAuth();
@@ -27,8 +29,8 @@ export default function BoardPage() {
 
       try {
         const [boardResponse, pinsResponse] = await Promise.all([
-          axios.get(`http://10.0.0.23:5000/api/boards/${id}`),
-          axios.get(`http://10.0.0.23:5000/api/boards/${id}/pins`)
+          api.get(`/api/boards/${id}`),
+          api.get(`/api/boards/${id}/pins`)
         ]);
 
         setBoard(boardResponse.data);

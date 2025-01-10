@@ -12,6 +12,7 @@ import { auth } from '../lib/firebase';
 import '../app/globals.css';
 import axios from 'axios';
 import { debounce } from 'lodash';
+import api from '../lib/api';
 
 const NavLink = ({ href, children, onClick }) => {
   const router = useRouter();
@@ -64,7 +65,7 @@ export default function Navbar({ title }) {
     if (query.trim().length >= 2) {
       setIsSearching(true);
       try {
-        const response = await axios.get(`http://10.0.0.23:5000/api/pins?search=${encodeURIComponent(query)}`);
+        const response = await api.get(`/api/pins?search=${encodeURIComponent(query)}`);
         
         const filteredResults = response.data
           .map(pin => {

@@ -5,6 +5,7 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import PinGrid from '../components/PinGrid';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function Feed() {
   const [pins, setPins] = useState([]);
@@ -29,7 +30,7 @@ export default function Feed() {
       if (!user) return;
       
       try {
-        const response = await axios.get('http://10.0.0.23:5000/api/feed', {
+        const response = await api.get('/api/feed', {
           params: {
             username: user.displayName
           }
@@ -48,7 +49,7 @@ export default function Feed() {
 
   const handleDeletePin = async (pinId) => {
     try {
-      const response = await axios.delete(`http://10.0.0.23:5000/api/pins/${pinId}`);
+      const response = await axios.delete(`/api/pins/${pinId}`);
       
       if (response.status === 200) {
         // Remove the pin from state

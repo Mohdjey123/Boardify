@@ -7,6 +7,7 @@ import { getAuth } from 'firebase/auth';
 import { storage } from '../firebase/config';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import '../app/globals.css';
+import api from '../lib/api';
 
 export default function CreatePin() {
   const router = useRouter();
@@ -69,7 +70,7 @@ export default function CreatePin() {
       const imageUrls = await uploadImages(imageFiles);
 
       // Create pin with rich text and multiple images
-      const response = await axios.post('http://10.0.0.23:5000/api/pins', {
+      const response = await api.post('/api/pins', {
         title,
         description,
         images: imageUrls,
