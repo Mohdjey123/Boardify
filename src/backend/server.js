@@ -11,11 +11,11 @@ app.use(express.json());
 
 // Updated pool configuration with SSL and connection timeout
 const pool = new Pool({
-  user: process.env.NEXT_PUBLIC_PGUSER,
-  host: process.env.NEXT_PUBLIC_PGHOST,
-  database: process.env.NEXT_PUBLIC_PGDATABASE,
-  password: process.env.NEXT_PUBLIC_PGPASSWORD,
-  port: process.env.NEXT_PUBLIC_PGPORT,
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
   ssl: {
     rejectUnauthorized: false // Required for Neon database
   },
