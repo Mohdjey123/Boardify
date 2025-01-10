@@ -19,9 +19,10 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false // Required for Neon database
   },
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 30000,
-  max: 20 // Maximum number of clients in the pool
+  connectionTimeoutMillis: 0,
+  idleTimeoutMillis: 0,
+  max: 1, // Maximum number of clients in the pool
+  keepAlive: false 
 });
 
 // Add error handling for the pool
