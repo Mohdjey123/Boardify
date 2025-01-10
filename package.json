@@ -7,7 +7,7 @@
     "dev:frontend": "next dev",
     "dev:backend": "node -r dotenv/config src/backend/server.js dotenv_config_path=src/backend/.env",
     "build": "next build",
-    "start": "next start",
+    "start": "concurrently \"node -r dotenv/config src/backend/server.js dotenv_config_path=src/backend/.env\" \"next start\"",
     "lint": "next lint"
   },
   "dependencies": {
