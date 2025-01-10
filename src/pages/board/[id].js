@@ -5,7 +5,7 @@ import { getAuth } from 'firebase/auth';
 import Navbar from '../../components/Navbar';
 import PinGrid from '../../components/PinGrid';
 import '../../app/globals.css';
-import api from '../lib/api';
+import api from '../../lib/api';
 
 export default function BoardPage() {
   const router = useRouter();

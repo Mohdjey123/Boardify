@@ -9,7 +9,7 @@ import BoardGrid from '../../components/BoardGrid';
 import CreateBoardModal from '../../components/CreateBoardModal';
 import PinGrid from '../../components/PinGrid';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import api from '../lib/api';
+import api from '../../lib/api';
 
 export default function ProfilePage() {
   const router = useRouter();
