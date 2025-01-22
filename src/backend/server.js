@@ -11,9 +11,10 @@ const app = express();
 app.use(cors());
 
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://boardify-puce.vercel.app']  // Your Vercel deployment URL
-    : ['http://localhost:3000'],            // Local development URL
+  origin: [
+    'https://*.vercel.app',
+    'http://localhost:3000'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -24,17 +25,13 @@ app.use(express.json());
 
 // Updated pool configuration with SSL and connection timeout
 const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false // Required for Neon database
   },
   connectionTimeoutMillis: 0,
   idleTimeoutMillis: 0,
-  max: 1, // Maximum number of clients in the pool
+  max: 30, // Maximum number of clients in the pool
   keepAlive: false 
 });
 
