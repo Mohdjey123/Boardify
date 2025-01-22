@@ -30,23 +30,19 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: true,
-    ca: process.env.NODE_ENV === 'production' 
+    ca: process.env.PGSSLROOTCERT 
       ? fs.readFileSync(process.env.PGSSLROOTCERT).toString()
       : undefined
-  },
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 30000
+  }
 });
 
-// Add connection verification
-pool.on('connect', (client) => {
-  console.log('Successfully connected to PostgreSQL database');
-});
-
-pool.on('error', (err) => {
-  console.error('Fatal database error:', err);
-  process.exit(-1);
-});
+// Test connection on startup
+pool.query('SELECT NOW()')
+  .then(() => console.log('✅ Connected to Neon PostgreSQL'))
+  .catch(err => {
+    console.error('❌ Failed to connect to Neon PostgreSQL:', err);
+    process.exit(1);
+  });
 
 // Consolidated Database Initialization
 const initializeDatabase = async () => {
@@ -143,9 +139,9 @@ process.on('unhandledRejection', (err) => {
 });
 
 // Modified /api/pins endpoint
-app.get('/api/pins', async (req, res) => {
+app.get('/pins', async (req, res) => {
   try {
-    const result = await pool.query(`
+    const { rows } = await pool.query(`
       SELECT 
         p.id,
         p.title,
@@ -163,7 +159,7 @@ app.get('/api/pins', async (req, res) => {
       LIMIT 20
     `);
     
-    res.json({ status: 'success', data: result.rows });
+    res.json({ status: 'success', data: rows });
   } catch (err) {
     console.error('🚨 API Error:', err.stack);
     res.status(500).json({

@@ -1,21 +1,25 @@
 import { Pool } from 'pg';
 
-export const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: process.env.NODE_ENV === 'production'
+  },
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000
 });
 
-export async function query(text, params) {
+// Add connection monitoring
+pool.on('connect', () => console.log('Database connected'));
+pool.on('error', err => console.error('Database error:', err));
+
+export const query = async (text, params) => {
   const client = await pool.connect();
   try {
     return await client.query(text, params);
   } finally {
     client.release();
   }
-}
+};
+
+export default pool;

@@ -1,4 +1,3 @@
-// lib/api.js
 import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://boardify-puce.vercel.app/api';
@@ -11,23 +10,30 @@ const api = axios.create({
   withCredentials: true
 });
 
-// Request interceptor for adding auth token
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(config => {
+  console.log('Request:', config.method?.toUpperCase(), config.url);
   return config;
-}, (error) => {
-  return Promise.reject(error);
 });
 
-// Response interceptor for handling errors
-api.interceptors.response.use((response) => {
-  return response;
-}, (error) => {
-  // Handle common errors (401, 403, 500, etc.)
-  if (error.response?.status === 401) {
-    // Handle unauthorized
-    window.location.href = '/login';
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      console.error('API Error:', {
+        status: error.response.status,
+        data: error.response.data,
+        url: error.config.url
+      });
+    } else {
+      console.error('Network Error:', error.message);
+    }
+    
+    if (error.response?.status === 401) {
+      window.location.href = '/login';
+    }
+    
+    return Promise.reject(error);
   }
-  return Promise.reject(error);
-});
+);
 
 export default api;
