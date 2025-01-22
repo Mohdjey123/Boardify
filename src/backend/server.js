@@ -128,7 +128,7 @@ initializeDatabase();
 // Enhanced API Endpoints
 
 // GET /pins endpoint
-app.get('/pins', async (req, res) => {
+app.get('/api/pins', async (req, res) => {
   const { username, page = 1, limit = 20 } = req.query;
   const offset = (page - 1) * limit;
 
@@ -138,12 +138,11 @@ app.get('/pins', async (req, res) => {
         p.id,
         p.title,
         p.description,
-        p.image_url,
+        p.image_url as "imageUrl",
         p.username,
-        p.created_at,
         COUNT(DISTINCT l.id) AS likes,
-        EXISTS(SELECT 1 FROM likes WHERE pin_id = p.id AND username = $1) AS liked_by_user,
-        COUNT(DISTINCT c.id) AS comments_count
+        COUNT(DISTINCT c.id) AS comments_count,
+        EXISTS(SELECT 1 FROM likes WHERE pin_id = p.id AND username = $1) AS liked
       FROM pins p
       LEFT JOIN likes l ON p.id = l.pin_id
       LEFT JOIN comments c ON p.id = c.pin_id
@@ -159,7 +158,7 @@ app.get('/pins', async (req, res) => {
     query += `
       GROUP BY p.id
       ORDER BY p.created_at DESC
-      LIMIT $${params.length + 1} 
+      LIMIT $${params.length + 1}
       OFFSET $${params.length + 2}
     `;
 
@@ -168,10 +167,10 @@ app.get('/pins', async (req, res) => {
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-    console.error('Error fetching pins:', err);
-    res.status(500).json({ 
-      error: 'Server error',
-      message: err.message // Include actual error message
+    console.error('Database Error:', err);
+    res.status(500).json({
+      error: 'Database query failed',
+      message: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
@@ -223,18 +222,14 @@ app.post('/pins', async (req, res) => {
   }
 });
 
-// Unified error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  // Return JSON for API routes
-  if (req.path.startsWith('/api')) {
-    return res.status(500).json({
-      error: 'Internal Server Error',
-      message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-    });
-  }
-  // HTML error page for other routes
-  res.status(500).send('<h1>Internal Server Error</h1>');
+  console.error('\x1b[31m', 'Server Error:', err.stack);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: process.env.NODE_ENV === 'development' 
+      ? 'Please try again later' 
+      : err.message
+  });
 });
 
 const PORT = process.env.PORT || 5000;
