@@ -26,20 +26,25 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json());
 
-// Improved PostgreSQL Pool Configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
+    rejectUnauthorized: true,
+    ca: process.env.NODE_ENV === 'production' 
+      ? fs.readFileSync(process.env.PGSSLROOTCERT).toString()
+      : undefined
   },
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 30000,
-  max: 20,
-  keepAlive: true
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000
+});
+
+// Add connection verification
+pool.on('connect', (client) => {
+  console.log('Successfully connected to PostgreSQL database');
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected database error:', err);
+  console.error('Fatal database error:', err);
   process.exit(-1);
 });
 
@@ -125,52 +130,46 @@ const initializeDatabase = async () => {
 // Initialize database on startup
 initializeDatabase();
 
-// Enhanced API Endpoints
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+  console.error(err.name, err.message);
+  process.exit(1);
+});
 
-// GET /pins endpoint
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.error(err.name, err.message);
+  server.close(() => process.exit(1));
+});
+
+// Modified /api/pins endpoint
 app.get('/api/pins', async (req, res) => {
-  const { username, page = 1, limit = 20 } = req.query;
-  const offset = (page - 1) * limit;
-
   try {
-    let query = `
+    const result = await pool.query(`
       SELECT 
         p.id,
         p.title,
         p.description,
-        p.image_url as "imageUrl",
+        p.image_url AS "imageUrl",
         p.username,
-        COUNT(DISTINCT l.id) AS likes,
-        COUNT(DISTINCT c.id) AS comments_count,
-        EXISTS(SELECT 1 FROM likes WHERE pin_id = p.id AND username = $1) AS liked
+        p.created_at AS "createdAt",
+        COUNT(l.id)::INTEGER AS likes,
+        COUNT(c.id)::INTEGER AS comments
       FROM pins p
       LEFT JOIN likes l ON p.id = l.pin_id
       LEFT JOIN comments c ON p.id = c.pin_id
-    `;
-
-    const params = [username || null];
-    
-    if (username) {
-      query += ' WHERE p.username = $2';
-      params.push(username);
-    }
-    
-    query += `
       GROUP BY p.id
       ORDER BY p.created_at DESC
-      LIMIT $${params.length + 1}
-      OFFSET $${params.length + 2}
-    `;
-
-    params.push(limit, offset);
-
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+      LIMIT 20
+    `);
+    
+    res.json({ status: 'success', data: result.rows });
   } catch (err) {
-    console.error('Database Error:', err);
+    console.error('🚨 API Error:', err.stack);
     res.status(500).json({
-      error: 'Database query failed',
-      message: process.env.NODE_ENV === 'development' ? err.message : undefined
+      status: 'error',
+      message: 'Failed to fetch pins',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });
