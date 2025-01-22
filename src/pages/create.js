@@ -94,7 +94,7 @@ export default function CreatePin() {
         richText: editor.getJSON()
       };
 
-      const response = await api.post('/api/pins', newPin);
+      const response = await api.post('/pins', newPin);
       
       if (!response?.data) {
         throw new Error('Failed to create pin. Please try again.');

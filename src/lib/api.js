@@ -1,14 +1,14 @@
 // lib/api.js
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://boardify-puce.vercel.app/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://boardify-puce.vercel.app';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: true // Important for CORS
+  withCredentials: true
 });
 
 // Request interceptor for adding auth token
