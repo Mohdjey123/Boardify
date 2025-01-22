@@ -44,7 +44,7 @@ export default function PinCard({ pin, boardTitle, onDeletePin }) {
   useEffect(() => {
     const recordView = async () => {
       try {
-        const response = await api.post(`/api/pins/${pin.id}/view`);
+        const response = await api.post(`/pins/${pin.id}/view`);
         setViews(response.data.views);
       } catch (error) {
         console.error('Error recording view:', error);
@@ -64,7 +64,7 @@ export default function PinCard({ pin, boardTitle, onDeletePin }) {
 
     setLoading(true);
     try {
-      const response = await api.post(`/api/pins/${pin.id}/like`, {
+      const response = await api.post(`/pins/${pin.id}/like`, {
         username: user.displayName
       });
       

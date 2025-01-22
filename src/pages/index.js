@@ -20,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPins = async () => {
       try {
-        const response = await api.get('/api/pins');
+        const response = await api.get('/pins');
         setPins(response.data);
       } catch (error) {
         console.error('Error fetching pins:', error);
@@ -33,7 +33,7 @@ export default function Home() {
 
   const handleDeletePin = async (pinId) => {
     try {
-      const response = await axios.delete(`/api/pins/${pinId}`);
+      const response = await axios.delete(`/pins/${pinId}`);
       
       if (response.status === 200) {
         // Remove the pin from state

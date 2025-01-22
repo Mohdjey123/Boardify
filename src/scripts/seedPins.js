@@ -52,7 +52,7 @@ const seedPins = async (count = 100) => {
     try {
       const pin = generatePin();
       console.log('Generated pin:', pin); // Log the generated pin
-      await api.post('/api/pins', pin);
+      await api.post('/pins', pin);
       successCount++;
       console.log(`Created pin ${i + 1}/${count}`);
     } catch (error) {

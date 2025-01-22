@@ -70,7 +70,7 @@ export default function CreatePin() {
       const imageUrls = await uploadImages(imageFiles);
 
       // Create pin with rich text and multiple images
-      const response = await api.post('/api/pins', {
+      const response = await api.post('/pins', {
         title,
         description,
         images: imageUrls,

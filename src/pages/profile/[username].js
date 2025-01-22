@@ -59,8 +59,8 @@ export default function ProfilePage() {
         setBoards(response.data);
       } else {
         const endpoint = activeTab === 'saved' 
-          ? `/api/pins/saved/${username}`
-          : `/api/pins/created/${username}`;
+          ? `/pins/saved/${username}`
+          : `/pins/created/${username}`;
         response = await api.get(`${endpoint}`);
         setPins(response.data);
       }
@@ -77,7 +77,7 @@ export default function ProfilePage() {
 
   const deletePin = async (pinId) => {
     try {
-      const response = await axios.delete(`/api/pins/${pinId}`);
+      const response = await axios.delete(`/pins/${pinId}`);
       
       if (response.status === 200) {
         // Remove the pin from state

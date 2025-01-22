@@ -127,8 +127,8 @@ initializeDatabase();
 
 // Enhanced API Endpoints
 
-// GET /api/pins endpoint
-app.get('/api/pins', async (req, res) => {
+// GET /pins endpoint
+app.get('/pins', async (req, res) => {
   const { username, page = 1, limit = 20 } = req.query;
   const offset = (page - 1) * limit;
 
@@ -177,7 +177,7 @@ app.get('/api/pins', async (req, res) => {
 });
 
 // Create pin with transaction
-app.post('/api/pins', async (req, res) => {
+app.post('/pins', async (req, res) => {
   const { title, description, images, username, richText } = req.body;
   const client = await pool.connect();
 

@@ -18,7 +18,7 @@ export default function SearchPage() {
       
       setLoading(true);
       try {
-        const response = await api.get(`/api/pins/search?q=${encodeURIComponent(query)}`);
+        const response = await api.get(`/pins/search?q=${encodeURIComponent(query)}`);
         setSearchResults(response.data);
         setError(null);
       } catch (err) {
