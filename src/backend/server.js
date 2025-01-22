@@ -127,19 +127,25 @@ initializeDatabase();
 
 // Enhanced API Endpoints
 
-// Get pins with pagination
+// GET /api/pins endpoint
 app.get('/api/pins', async (req, res) => {
   const { username, page = 1, limit = 20 } = req.query;
   const offset = (page - 1) * limit;
 
   try {
     let query = `
-      SELECT p.*, 
-        COALESCE(l.count, 0) AS likes,
+      SELECT 
+        p.id,
+        p.title,
+        p.description,
+        p.image_url,
+        p.username,
+        p.created_at,
+        COUNT(DISTINCT l.id) AS likes,
         EXISTS(SELECT 1 FROM likes WHERE pin_id = p.id AND username = $1) AS liked_by_user,
-        COUNT(c.id) AS comments_count
+        COUNT(DISTINCT c.id) AS comments_count
       FROM pins p
-      LEFT JOIN (SELECT pin_id, COUNT(*) FROM likes GROUP BY pin_id) l ON p.id = l.pin_id
+      LEFT JOIN likes l ON p.id = l.pin_id
       LEFT JOIN comments c ON p.id = c.pin_id
     `;
 
@@ -151,9 +157,10 @@ app.get('/api/pins', async (req, res) => {
     }
     
     query += `
-      GROUP BY p.id, l.count
+      GROUP BY p.id
       ORDER BY p.created_at DESC
-      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+      LIMIT $${params.length + 1} 
+      OFFSET $${params.length + 2}
     `;
 
     params.push(limit, offset);
@@ -162,7 +169,10 @@ app.get('/api/pins', async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching pins:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ 
+      error: 'Server error',
+      message: err.message // Include actual error message
+    });
   }
 });
 
@@ -216,10 +226,15 @@ app.post('/api/pins', async (req, res) => {
 // Unified error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-  });
+  // Return JSON for API routes
+  if (req.path.startsWith('/api')) {
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    });
+  }
+  // HTML error page for other routes
+  res.status(500).send('<h1>Internal Server Error</h1>');
 });
 
 const PORT = process.env.PORT || 5000;
