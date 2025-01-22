@@ -1,16 +1,18 @@
-// pages/api/_middleware.js
-export { default } from 'next-connect';
-import cors from 'cors';
+// middleware.js
+import { NextResponse } from 'next/server'
 
-const corsMiddleware = cors({
-  origin: [
-    'https://boardify-puce.vercel.app',
-    'http://localhost:3000'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-});
+export function middleware(request) {
+  const response = NextResponse.next()
 
-export default function middleware(req, res) {
-  return corsMiddleware(req, res, () => {});
+  // Set CORS headers
+  response.headers.set('Access-Control-Allow-Origin', 'https://boardify-puce.vercel.app')
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  response.headers.set('Access-Control-Allow-Credentials', 'true')
+
+  return response
+}
+
+export const config = {
+  matcher: '/api/:path*',
 }
