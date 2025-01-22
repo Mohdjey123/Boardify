@@ -12,15 +12,22 @@ app.use(cors());
 
 const corsOptions = {
   origin: [
+    'https://boardify-puce.vercel.app',
     'https://*.vercel.app',
     'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization',
+    'X-Requested-With'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Updated pool configuration with SSL and connection timeout
